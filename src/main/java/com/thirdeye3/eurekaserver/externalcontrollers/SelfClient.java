@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.thirdeye3.eurekaserver.dtos.Response;
 
-@FeignClient(name = "${spring.application.name}")
+@FeignClient(
+    name = "${spring.application.name}", 
+    url = "${self.url:}"                     
+)
 public interface SelfClient {
 
     @GetMapping("/api/statuschecker/{id}/{code}")
@@ -14,4 +17,3 @@ public interface SelfClient {
         @PathVariable("code") String code
     );
 }
-
