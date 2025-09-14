@@ -26,7 +26,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String requestApiKey = request.getHeader("THIRDEYE-API-KEY");
-
+        System.out.println("KARTIKEY 123"+requestApiKey+" "+apiKey);
         if (requestApiKey == null) {
             requestApiKey = request.getParameter("THIRDEYE-API-KEY");
         }
