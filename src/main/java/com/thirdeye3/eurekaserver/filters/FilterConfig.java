@@ -17,7 +17,6 @@ public class FilterConfig {
         FilterRegistrationBean<ApiKeyFilter> registrationBean = new FilterRegistrationBean<>();
         ApiKeyFilter apiKeyFilter = new ApiKeyFilter();
         apiKeyFilter.setApiKey(apiKey);
-        
         registrationBean.setFilter(apiKeyFilter);
         registrationBean.addUrlPatterns("/eureka/*");
         return registrationBean;
