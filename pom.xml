@@ -78,11 +78,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.thirdeye3.propertymanager</groupId>
-			<artifactId>THIRDEYE3.0_PROPERTYMANAGER</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
