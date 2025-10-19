@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class ApiKeyFilter extends OncePerRequestFilter {
 
@@ -24,13 +25,13 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         String requestApiKey = request.getHeader("THIRDEYE-API-KEY");
-        if (requestApiKey == null) {
-            requestApiKey = request.getParameter("THIRDEYE-API-KEY");
+        String remoteAddr = request.getRemoteAddr();
+        if (requestApiKey == null && InetAddress.getByName(remoteAddr).isLoopbackAddress()) {
+            System.out.println("remoteAddr is "+remoteAddr);
+            filterChain.doFilter(request, response);
         }
-
-        if (apiKey != null && apiKey.equals(requestApiKey)) {
+        else if (apiKey != null && apiKey.equals(requestApiKey)) {
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
