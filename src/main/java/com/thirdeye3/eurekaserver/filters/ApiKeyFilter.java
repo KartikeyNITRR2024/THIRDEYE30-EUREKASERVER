@@ -43,6 +43,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
         System.out.println("remoteAddr "+remoteAddr);
         System.out.println("selfHost "+selfHost);
         System.out.println("remoteHost "+remoteHost);
+        System.out.println("check "+remoteHost.equals(selfHost));
         if ((requestApiKey == null && remoteHost.equals(selfHost)) || (apiKey != null && apiKey.equals(requestApiKey))) {
             filterChain.doFilter(request, response);
         } else {
