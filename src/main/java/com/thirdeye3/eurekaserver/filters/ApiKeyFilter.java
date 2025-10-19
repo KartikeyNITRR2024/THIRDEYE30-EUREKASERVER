@@ -10,28 +10,34 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ApiKeyFilter extends OncePerRequestFilter {
 
+    private String selfUrl;
     private String apiKey;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
+    public void setSelfUrl(String selfUrl) {
+        this.selfUrl = selfUrl;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         String requestApiKey = request.getHeader("THIRDEYE-API-KEY");
         String remoteAddr = request.getRemoteAddr();
-        if (requestApiKey == null && InetAddress.getByName(remoteAddr).isLoopbackAddress()) {
-            System.out.println("remoteAddr is "+remoteAddr);
-            filterChain.doFilter(request, response);
-        }
-        else if (apiKey != null && apiKey.equals(requestApiKey)) {
+        URL url = new URL(selfUrl);
+        InetAddress selfHost = InetAddress.getByName(url.getHost());
+        InetAddress remoteHost = InetAddress.getByName(remoteAddr);
+        if ((requestApiKey == null && remoteHost.equals(selfHost)) || (apiKey != null && apiKey.equals(requestApiKey))) {
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
