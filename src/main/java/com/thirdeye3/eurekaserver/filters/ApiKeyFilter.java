@@ -9,22 +9,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class ApiKeyFilter extends OncePerRequestFilter {
 
     private String selfUrl;
     private String apiKey;
+    private String bypassDiscoveryIdentityName;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public void setSelfUrl(String selfUrl) {
-        this.selfUrl = selfUrl;
+    public void setBypassDiscoveryIdentityName(String bypassDiscoveryIdentityName) {
+        this.bypassDiscoveryIdentityName = bypassDiscoveryIdentityName;
     }
 
     @Override
@@ -32,19 +30,14 @@ public class ApiKeyFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String discoveryIdentity = request.getHeader("discoveryidentity-name");
+        if (discoveryIdentity != null && discoveryIdentity.equalsIgnoreCase(bypassDiscoveryIdentityName)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String requestApiKey = request.getHeader("THIRDEYE-API-KEY");
-        String remoteAddr = request.getRemoteAddr();
-        URL url = new URL(selfUrl);
-        InetAddress selfHost = InetAddress.getByName(url.getHost());
-        InetAddress remoteHost = InetAddress.getByName(remoteAddr);
-        System.out.println("selfUrl "+selfUrl);
-        System.out.println("url.getHost() "+url.getHost());
-        System.out.println("requestApiKey "+requestApiKey);
-        System.out.println("remoteAddr "+remoteAddr);
-        System.out.println("selfHost "+selfHost);
-        System.out.println("remoteHost "+remoteHost);
-        System.out.println("check "+remoteHost.equals(selfHost));
-        if ((requestApiKey == null && remoteHost.equals(selfHost)) || (apiKey != null && apiKey.equals(requestApiKey))) {
+        if (apiKey != null && apiKey.equals(requestApiKey)) {
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
