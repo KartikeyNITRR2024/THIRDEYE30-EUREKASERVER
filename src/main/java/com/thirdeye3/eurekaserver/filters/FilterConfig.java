@@ -11,15 +11,12 @@ public class FilterConfig {
     @Value("${thirdeye.api.key}")
     private String apiKey;
 
-    @Value("${thirdeye.bypass.discoveryidentity-name}")
-    private String bypassDiscoveryIdentityName;
 
     @Bean
     public FilterRegistrationBean<ApiKeyFilter> apiKeyFilter() {
         FilterRegistrationBean<ApiKeyFilter> registrationBean = new FilterRegistrationBean<>();
         ApiKeyFilter apiKeyFilter = new ApiKeyFilter();
         apiKeyFilter.setApiKey(apiKey);
-        apiKeyFilter.setBypassDiscoveryIdentityName(bypassDiscoveryIdentityName);
         registrationBean.setFilter(apiKeyFilter);
         registrationBean.addUrlPatterns("/eureka/*", "/es/*");
         registrationBean.setOrder(1);

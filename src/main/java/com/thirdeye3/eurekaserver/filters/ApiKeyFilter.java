@@ -12,29 +12,18 @@ import java.io.IOException;
 
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-    private String selfUrl;
     private String apiKey;
-    private String bypassDiscoveryIdentityName;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public void setBypassDiscoveryIdentityName(String bypassDiscoveryIdentityName) {
-        this.bypassDiscoveryIdentityName = bypassDiscoveryIdentityName;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        String discoveryIdentity = request.getHeader("discoveryidentity-name");
-        if (discoveryIdentity != null && discoveryIdentity.equalsIgnoreCase(bypassDiscoveryIdentityName)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String requestApiKey = request.getHeader("THIRDEYE-API-KEY");
         if (apiKey != null && apiKey.equals(requestApiKey)) {
